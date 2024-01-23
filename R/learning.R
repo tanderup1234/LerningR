@@ -4,3 +4,4 @@ library(tidyverse)
 
 
 
+str(airquality)
