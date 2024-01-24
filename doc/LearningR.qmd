@@ -1,0 +1,77 @@
+---
+title: "Reproducible documents"
+author: "Rasmus Tanderup Jensen"
+format: html
+---
+Setup in chunk will automatically run everything it
+
+```{r setup}
+#| message: FALSE
+#| warning: FALSE
+library(tidyverse)
+library(NHANES)
+
+nhanes_small <- read_csv(here::here("data/nhanes_small.csv"))
+```
+
+
+```{r}
+nhanes_small <- nhanes_small %>%
+  select(age, sex, bmi, diabetes, phys_active, bp_sys_ave, bp_dia_ave, education)
+
+nhanes_small
+```
+# Table of results
+
+
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes)) %>%
+  group_by(diabetes, education) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    mean_bmi = mean(bmi, na.rm = TRUE)
+  ) %>%
+  ungroup()
+```
+
+
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes), !is.na(education)) %>%
+  group_by(diabetes, education) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    mean_bmi = mean(bmi, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  knitr::kable(caption = "Mean values of Age and BMI for each education and diabetes status.")
+```
+
+#Prettier table
+```{r}
+#| echo: false
+nhanes_small %>%
+  filter(!is.na(diabetes), !is.na(education)) %>%
+  group_by(diabetes, education) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    mean_bmi = mean(bmi, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    # Task 2a.
+    mean_age = round(mean_age, 1),
+    mean_bmi = round(mean_bmi, 1),
+    # Task 2b.
+    education = str_to_sentence(education)
+  ) %>%
+  rename(
+    # Task 3.
+    "Diabetes Status" = diabetes,
+    "Education" = education,
+    "Mean Age" = mean_age,
+    "Mean BMI" = mean_bmi
+  ) %>%
+  knitr::kable(caption = "Mean values of Age and BMI for each education and diabetes status.")
+```
