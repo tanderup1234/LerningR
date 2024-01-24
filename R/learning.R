@@ -189,3 +189,43 @@ NHANES_small %>%
     summarize(max_bmi = max(bmi, na.rm = TRUE))
 
 
+results <- NHANES_small %>%
+    summarize(max_bmi = max(bmi, na.rm = TRUE),
+              min_bmi = min(bmi, na.rm = TRUE))
+
+
+# Summary statistics by a group -------------------------------------------
+NHANES_small %>%
+    group_by(diabetes) %>%
+    summarise(mean_age = mean(age, na.rm = TRUE),
+              mean_bmi = mean(bmi, na.rm = TRUE))
+
+
+NHANES_small %>%
+    # Recall ! means "NOT", so !is.na means "is not missing"
+    filter(!is.na(diabetes)) %>%
+    group_by(diabetes) %>%
+    summarise(mean_age = mean(age, na.rm = TRUE),
+              mean_bmi = mean(bmi, na.rm = TRUE))
+
+
+NHANES_small %>%
+    filter(!is.na(diabetes)) %>%
+    group_by(diabetes, phys_active) %>%
+    summarise(mean_age = mean(age, na.rm = TRUE),
+              mean_bmi = mean(bmi, na.rm = TRUE))
+
+#Ungrouping
+NHANES_small %>%
+    filter(!is.na(diabetes)) %>%
+    group_by(diabetes, phys_active) %>%
+    summarise(mean_age = mean(age, na.rm = TRUE),
+              mean_bmi = mean(bmi, na.rm = TRUE)) %>%
+    ungroup()
+
+
+
+# Saving dataset as a file ------------------------------------------------
+
+readr::write_csv(NHANES_small,
+                 here::here('data/nhanes_small.csv'))
