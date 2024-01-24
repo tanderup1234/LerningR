@@ -183,5 +183,9 @@ nhanes_modified <- NHANES_small %>% # Specifying dataset
 
 nhanes_modified
 
+# Calculating summary statistics ------------------------------------------
+
+NHANES_small %>%
+    summarize(max_bmi = max(bmi, na.rm = TRUE))
 
 
