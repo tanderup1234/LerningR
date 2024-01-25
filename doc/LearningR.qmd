@@ -75,3 +75,177 @@ nhanes_small %>%
   ) %>%
   knitr::kable(caption = "Mean values of Age and BMI for each education and diabetes status.")
 ```
+A majestic dog @fig-weimarane
+
+![Caption text](image/download.jfif){#fig-weimarane width="50%" height="50%"}
+
+
+![Caption text](image/Felis_silvestris_silvestris_small_gradual_decrease_of_quality.png)
+
+#One continuous variable
+```{r}
+#| fig-cap: "Distribution of BMI"
+#| label: fig-bmi-histo
+#| message: false
+
+nhanes_small %>%
+  filter(bmi <= 60) %>%
+  ggplot(aes(x = bmi)) +
+  geom_histogram(na.rm = TRUE) +
+  theme_bw()
+```
+
+#Plotting one discrete variable
+
+```{r}
+#| label: fig-diabetes-education
+#| fig-cap: "Count of Diabetes and Education"
+#| fig-subcap:
+#| - "Number of those with different education degree"
+#| - "Number of those with or without diabetes"
+#| layout-ncol: 2
+
+
+
+nhanes_small %>%
+  filter(!is.na(education)) %>%
+  ggplot(aes(x = education)) +
+  geom_bar() +
+  theme_bw()
+
+
+nhanes_small %>%
+  filter(!is.na(diabetes)) %>%
+  ggplot(aes(x = diabetes)) +
+  geom_bar() +
+  theme_bw()
+```
+
+#Plotting two continuous variables
+```{r}
+nhanes_small %>%
+  ggplot(aes(x = bmi, y = bp_sys_ave)) +
+  geom_hex(na.rm = TRUE) +
+  geom_smooth(na.rm = TRUE) +
+  theme_bw()
+```
+
+#Plotting two discrete variables
+```{r}
+nhanes_small %>%
+  filter(!is.na(education), !is.na(education)) %>%
+  ggplot(aes(x = diabetes, fill = education)) +
+  geom_bar(position = position_dodge()) +
+  theme_bw()
+```
+
+#Plotting discrete and continuous variables
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes), bmi <= 60) %>%
+  ggplot(aes(x = diabetes, y = bmi)) +
+  geom_violin(na.rm = TRUE) +
+  theme_bw()
+```
+
+# Exercise 9.5 - to make plots with one or two variables
+```{r}
+library(NHANES)
+nhanes_exercise <- NHANES %>%
+  rename_with(snakecase::to_snake_case) %>%
+  rename(sex = gender)
+
+#| label: fig-distribution-ages
+#| fig-cap: "Distribution of age, and age at diabetes diagnosis"
+#| layout-ncol: 2
+#| fig-subcap:
+#|   - "Distribution of age"
+#|   - "Distribution og age at diagnosis of diabetes"
+# Distribution of age
+nhanes_exercise %>%
+  ggplot(aes(x = age)) +
+  geom_density(na.rm = TRUE) +
+  theme_bw()
+
+# Distribution of age at diabetes diagnosis
+nhanes_exercise %>%
+  ggplot(aes(x = diabetes_age)) +
+  geom_density(na.rm = TRUE) +
+  theme_bw()
+```
+
+```{r}
+# Number of people who smoke now and are or above 20 years of age,
+# removing those with missing smoking status.
+nhanes_exercise %>%
+  filter(age >= 20, !is.na(smoke_now)) %>%
+  ggplot(aes(x = smoke_now)) +
+  geom_bar() +
+  theme_bw()
+```
+
+
+
+
+```{r}
+# BMI in relation to mean arterial pressure
+nhanes_exercise %>%
+  mutate(mean_arterial_pressure = (bp_sys_ave + (2 * bp_dia_ave)) / 3) %>%
+  ggplot(aes(x = bmi, y = mean_arterial_pressure)) +
+  geom_hex(na.rm = TRUE) +
+  geom_smooth() +
+  theme_bw()
+```
+
+#Visualizing three or more variables
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes), !is.na(education)) %>%
+  ggplot(aes(
+    x = education,
+    y = bp_sys_ave,
+    colour = diabetes
+  )) +
+  geom_boxplot(na.rm = TRUE) +
+  theme_bw()
+```
+
+
+```{r}
+nhanes_small %>%
+  ggplot(aes(x = bmi, y = bp_sys_ave, colour = age)) +
+  geom_point(na.rm = TRUE) +
+  theme_bw()
+```
+
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes)) %>%
+  ggplot(aes(x = bmi, y = bp_sys_ave, colour = diabetes)) +
+  geom_point(na.rm = TRUE) +
+  theme_bw()
+```
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes)) %>%
+  ggplot(aes(x = bmi, y = bp_sys_ave)) +
+  geom_point(na.rm = TRUE) +
+  facet_grid(cols = vars(diabetes)) +
+  theme_bw()
+```
+
+```{r}
+nhanes_small %>%
+  filter(!is.na(diabetes), !is.na(education)) %>%
+  ggplot(aes(
+    x = bmi,
+    y = bp_sys_ave,
+    colour = age
+  )) +
+  geom_point(na.rm = TRUE) +
+  facet_grid(
+    rows = vars(diabetes),
+    cols = vars(education)
+  ) +
+  theme_bw()
+```
